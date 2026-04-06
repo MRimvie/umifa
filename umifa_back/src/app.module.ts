@@ -9,6 +9,7 @@ import { ExamCentersModule } from './exam-centers/exam-centers.module';
 import { CandidatesModule } from './candidates/candidates.module';
 import { GradesModule } from './grades/grades.module';
 import { SeedController } from './seed.controller';
+import { MigrateController } from './migrate.controller';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { SeedController } from './seed.controller';
     CandidatesModule,
     GradesModule,
   ],
-  controllers: [SeedController],
+  controllers: [SeedController, MigrateController],
 })
 export class AppModule {}
