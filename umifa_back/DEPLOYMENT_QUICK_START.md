@@ -31,11 +31,11 @@ Remplis les champs suivants **EXACTEMENT** comme indiqué :
 - **Runtime** : `Node`
 - **Build Command** :
   ```bash
-  cd umifa_back && npm install --legacy-peer-deps && npx prisma generate && npm run build
+  cd umifa_back && npm install --legacy-peer-deps && ./node_modules/.bin/prisma generate && npm run build
   ```
 - **Start Command** :
   ```bash
-  cd umifa_back && npx prisma migrate deploy && npm run start:prod
+  cd umifa_back && ./node_modules/.bin/prisma migrate deploy && npm run start:prod
   ```
 - **Plan** : `Free`
 

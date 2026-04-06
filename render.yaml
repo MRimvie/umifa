@@ -5,8 +5,8 @@ services:
     runtime: node
     region: frankfurt
     plan: free
-    buildCommand: cd umifa_back && npm install --legacy-peer-deps && npx prisma generate && npm run build
-    startCommand: cd umifa_back && npx prisma migrate deploy && npm run start:prod
+    buildCommand: cd umifa_back && npm install --legacy-peer-deps && ./node_modules/.bin/prisma generate && npm run build
+    startCommand: cd umifa_back && ./node_modules/.bin/prisma migrate deploy && npm run start:prod
     healthCheckPath: /api
     envVars:
       - key: NODE_ENV
