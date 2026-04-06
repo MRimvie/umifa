@@ -1,0 +1,40 @@
+services:
+  # Backend API
+  - type: web
+    name: umifa-backend
+    runtime: node
+    region: frankfurt
+    plan: free
+    rootDir: umifa_back
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm run start:prod
+    healthCheckPath: /api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://moni_user:2LFqOyGLakY1J2yWl0zlagX8rIselxlX@dpg-d77tdms50q8c73d28pbg-a.frankfurt-postgres.render.com/moni_db_wxyz
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        value: https://umifa-web.onrender.com
+
+  # Frontend Angular
+  - type: web
+    name: umifa-web
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: cd umifa_web && npm install && npm run build
+    staticPublishPath: umifa_web/dist/umifa-web/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_ENV
+        value: production

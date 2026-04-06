@@ -1,0 +1,25 @@
+<div class="space-y-6 animate-fade-in">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-gray-900">Années Scolaires</h1>
+    <button class="btn-primary">
+      <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouvelle année
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let year of years()" class="card" [class.ring-2]="year.isActive" [class.ring-primary-500]="year.isActive">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-2xl font-bold text-gray-900">{{ year.year }}</h3>
+        <span *ngIf="year.isActive" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Active</span>
+      </div>
+      <div class="space-y-2 text-sm text-gray-600">
+        <p>Début: {{ year.startDate | date:'dd/MM/yyyy' }}</p>
+        <p>Fin: {{ year.endDate | date:'dd/MM/yyyy' }}</p>
+        <p class="font-medium">Statut: {{ year.status }}</p>
+      </div>
+    </div>
+  </div>
+</div>

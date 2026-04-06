@@ -1,0 +1,75 @@
+<aside 
+  [class.w-64]="!isCollapsed()"
+  [class.w-20]="isCollapsed()"
+  class="bg-gradient-to-b from-gray-900 to-gray-800 text-white h-screen fixed left-0 top-0 transition-all duration-300 ease-in-out shadow-2xl z-50">
+  
+  <!-- Header -->
+  <div class="p-6 border-b border-gray-700">
+    <div class="flex items-center justify-between">
+      <div *ngIf="!isCollapsed()" class="flex items-center space-x-3 animate-fade-in">
+        <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">UMIFA</h1>
+          <p class="text-xs text-gray-400">CEP Arabe</p>
+        </div>
+      </div>
+      <button 
+        (click)="toggleSidebar()"
+        class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="p-4 space-y-2 overflow-y-auto h-[calc(100vh-200px)]">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkActive="bg-primary-600 shadow-lg"
+      [class.hidden]="!isMenuVisible(item)"
+      class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-all duration-200 group cursor-pointer">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
+      </svg>
+      <span 
+        *ngIf="!isCollapsed()" 
+        class="font-medium animate-fade-in">
+        {{ item.label }}
+      </span>
+    </a>
+  </nav>
+
+  <!-- User Profile -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700 bg-gray-900">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0">
+        <span class="text-sm font-bold">
+          {{ authService.currentUser()?.firstName?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
+        </span>
+      </div>
+      <div *ngIf="!isCollapsed()" class="flex-1 min-w-0 animate-fade-in">
+        <p class="text-sm font-medium truncate">
+          {{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}
+        </p>
+        <p class="text-xs text-gray-400 truncate">
+          {{ authService.currentUser()?.role }}
+        </p>
+      </div>
+      <button
+        (click)="logout()"
+        [title]="isCollapsed() ? 'Déconnexion' : ''"
+        class="p-2 hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
