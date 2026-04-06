@@ -49,4 +49,26 @@ export class MigrateController {
       };
     }
   }
+
+  @Post('reset')
+  async reset() {
+    try {
+      const { stdout, stderr } = await execAsync('./node_modules/.bin/prisma db push --force-reset --accept-data-loss');
+      
+      return {
+        success: true,
+        message: 'Base de données réinitialisée et schema créé',
+        output: stdout,
+        errors: stderr || null,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Erreur lors de la réinitialisation',
+        error: error.message,
+        output: error.stdout || null,
+        stderr: error.stderr || null,
+      };
+    }
+  }
 }
