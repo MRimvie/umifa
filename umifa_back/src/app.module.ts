@@ -8,6 +8,7 @@ import { SchoolYearsModule } from './school-years/school-years.module';
 import { ExamCentersModule } from './exam-centers/exam-centers.module';
 import { CandidatesModule } from './candidates/candidates.module';
 import { GradesModule } from './grades/grades.module';
+import { SeedController } from './seed.controller';
 
 @Module({
   imports: [
@@ -23,5 +24,6 @@ import { GradesModule } from './grades/grades.module';
     CandidatesModule,
     GradesModule,
   ],
+  controllers: [SeedController],
 })
 export class AppModule {}
