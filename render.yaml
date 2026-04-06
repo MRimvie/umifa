@@ -5,7 +5,6 @@ services:
     runtime: node
     region: frankfurt
     plan: free
-    rootDir: umifa_back
     buildCommand: cd umifa_back && npm install --legacy-peer-deps && npx prisma generate && npm run build
     startCommand: cd umifa_back && npx prisma migrate deploy && npm run start:prod
     healthCheckPath: /api
