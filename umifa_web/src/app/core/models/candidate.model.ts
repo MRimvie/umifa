@@ -30,12 +30,22 @@ export interface Candidate {
 export interface Grade {
   id: string;
   candidateId: string;
-  centerId: string;
+  centerId?: string;
   subject: string;
   score: number;
+  maxScore: number;
+  comments?: string;
   totalScore?: number;
   average?: number;
   result?: 'ADMIS' | 'AJOURNE' | 'EN_ATTENTE';
+  candidate?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    school?: {
+      name: string;
+    };
+  };
   createdAt?: string;
   updatedAt?: string;
 }

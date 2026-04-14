@@ -1,10 +1,10 @@
 <aside 
   [class.w-64]="!isCollapsed()"
   [class.w-20]="isCollapsed()"
-  class="bg-gradient-to-b from-gray-900 to-gray-800 text-white h-screen fixed left-0 top-0 transition-all duration-300 ease-in-out shadow-2xl z-50">
+  class="bg-white text-gray-800 h-screen fixed left-0 top-0 transition-all duration-300 ease-in-out shadow-2xl border-r border-gray-200 z-50">
   
   <!-- Header -->
-  <div class="p-6 border-b border-gray-700">
+  <div class="p-6 border-b border-gray-200">
     <div class="flex items-center justify-between">
       <div *ngIf="!isCollapsed()" class="flex items-center space-x-3 animate-fade-in">
         <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
@@ -13,13 +13,13 @@
           </svg>
         </div>
         <div>
-          <h1 class="text-xl font-bold">UMIFA</h1>
-          <p class="text-xs text-gray-400">CEP Arabe</p>
+          <h1 class="text-xl font-bold text-gray-900">UMIFA</h1>
+          <p class="text-xs text-gray-500">CEP Arabe</p>
         </div>
       </div>
       <button 
         (click)="toggleSidebar()"
-        class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+        class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
@@ -32,9 +32,9 @@
     <a
       *ngFor="let item of menuItems"
       [routerLink]="item.route"
-      routerLinkActive="bg-primary-600 shadow-lg"
+      routerLinkActive="bg-primary-600 text-white shadow-lg"
       [class.hidden]="!isMenuVisible(item)"
-      class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-all duration-200 group cursor-pointer">
+      class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition-all duration-200 group cursor-pointer text-gray-700">
       <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
       </svg>
@@ -47,25 +47,25 @@
   </nav>
 
   <!-- User Profile -->
-  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700 bg-gray-900">
+  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
     <div class="flex items-center space-x-3">
       <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0">
-        <span class="text-sm font-bold">
+        <span class="text-sm font-bold text-white">
           {{ authService.currentUser()?.firstName?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
         </span>
       </div>
       <div *ngIf="!isCollapsed()" class="flex-1 min-w-0 animate-fade-in">
-        <p class="text-sm font-medium truncate">
+        <p class="text-sm font-medium truncate text-gray-900">
           {{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}
         </p>
-        <p class="text-xs text-gray-400 truncate">
+        <p class="text-xs text-gray-500 truncate">
           {{ authService.currentUser()?.role }}
         </p>
       </div>
       <button
         (click)="logout()"
         [title]="isCollapsed() ? 'Déconnexion' : ''"
-        class="p-2 hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0">
+        class="p-2 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0 text-gray-700">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
         </svg>

@@ -23,9 +23,9 @@ export class LoginComponent {
 
   // Comptes de test pour faciliter la démo
   testAccounts = [
-    { label: 'Super Admin', email: 'admin@umifa.fr', password: 'admin123' },
-    { label: 'Responsable École', email: 'manager@alihsan.fr', password: 'admin123' },
-    { label: 'Correcteur', email: 'grader@umifa.fr', password: 'admin123' }
+    { label: 'Super Admin', email: 'admin@gmail.com', password: 'admin123' },
+    { label: 'Responsable École', email: 'manager@gmail.com', password: 'manager123' },
+    { label: 'Correcteur', email: 'correcteur@gmail.com', password: 'correcteur123' }
   ];
 
   /**
