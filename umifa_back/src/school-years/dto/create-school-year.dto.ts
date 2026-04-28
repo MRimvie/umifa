@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEnum, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsDateString, IsBoolean, IsOptional } from 'class-validator';
 import { SchoolYearStatus } from '@prisma/client';
 
 export class CreateSchoolYearDto {
@@ -17,4 +17,8 @@ export class CreateSchoolYearDto {
   @IsEnum(SchoolYearStatus, { message: 'Statut invalide' })
   @IsNotEmpty({ message: 'Statut requis' })
   status: SchoolYearStatus;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }
