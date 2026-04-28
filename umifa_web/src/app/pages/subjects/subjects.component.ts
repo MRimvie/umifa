@@ -1,34 +1,34 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ExamCenterService, ExamCenter, CreateExamCenterDto } from '../../core/services/exam-center.service';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { MobileListComponent } from '../../shared/components/mobile-list/mobile-list.component';
 import { BottomSheetComponent } from '../../shared/components/bottom-sheet/bottom-sheet.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { SubjectService, Subject } from '../../core/services/subject.service';
 
 @Component({
-  selector: 'app-exam-centers',
+  selector: 'app-subjects',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent, TranslateModule],
-  templateUrl: './exam-centers.component.html',
-  styleUrls: ['./exam-centers.component.scss']
+  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent],
+  templateUrl: './subjects.component.html',
+  styleUrls: ['./subjects.component.scss'],
 })
-export class ExamCentersComponent implements OnInit {
-  private examCenterService = inject(ExamCenterService);
-  
-  centers = signal<ExamCenter[]>([]);
+export class SubjectsComponent implements OnInit {
+  private subjectService = inject(SubjectService);
+
+  subjects = signal<Subject[]>([]);
   loading = signal(false);
-  showDrawer = signal(false);
-  editMode = signal(false);
-  selectedCenter = signal<ExamCenter | null>(null);
 
   queryFilter = signal('');
+  showDrawer = signal(false);
+  editMode = signal(false);
+  selectedSubject = signal<Subject | null>(null);
+
   pageIndex = signal(0);
   pageSize = signal(10);
 
   mobileSheetOpen = signal(false);
-  mobileSelectedCenter = signal<ExamCenter | null>(null);
+  mobileSelectedSubject = signal<Subject | null>(null);
 
   dialogOpen = signal(false);
   dialogTitle = signal('');
@@ -59,40 +59,37 @@ export class ExamCentersComponent implements OnInit {
     this.closeDialog();
     action?.();
   }
-  
-  formData = signal<CreateExamCenterDto>({
+
+  formData = signal<{ name: string; noteMax: number; isActive: boolean }>({
     name: '',
-    nameAr: '',
-    address: '',
-    capacity: 0,
-    phone: ''
+    noteMax: 20,
+    isActive: true,
   });
 
-  openMobileDetails(center: ExamCenter): void {
-    this.mobileSelectedCenter.set(center);
-    this.mobileSheetOpen.set(true);
+  setActive(next: boolean): void {
+    this.formData.set({ ...this.formData(), isActive: next });
   }
 
-  closeMobileDetails(): void {
-    this.mobileSheetOpen.set(false);
+  setNoteMax(val: string | number): void {
+    this.formData.set({ ...this.formData(), noteMax: Number(val) || 20 });
   }
 
   ngOnInit(): void {
-    this.loadCenters();
+    this.loadSubjects();
   }
 
-  loadCenters(): void {
+  loadSubjects(): void {
     this.loading.set(true);
-    this.examCenterService.getAll().subscribe({
+    this.subjectService.getAll({ includeInactive: true }).subscribe({
       next: (data) => {
-        this.centers.set(data);
+        this.subjects.set(data);
         this.pageIndex.set(0);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Erreur chargement centres', err);
+        console.error('Erreur chargement matières', err);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -109,89 +106,78 @@ export class ExamCentersComponent implements OnInit {
     this.pageIndex.set(0);
   }
 
-  get filteredCenters(): ExamCenter[] {
+  get filteredSubjects(): Subject[] {
     const q = this.queryFilter().trim().toLowerCase();
-    if (!q) return this.centers();
-    return this.centers().filter((c) => {
-      return c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q);
-    });
+    if (!q) return this.subjects();
+    return this.subjects().filter((s) => s.name.toLowerCase().includes(q));
   }
 
-  get pagedCenters(): ExamCenter[] {
+  get pagedSubjects(): Subject[] {
     const start = this.pageIndex() * this.pageSize();
-    return this.filteredCenters.slice(start, start + this.pageSize());
+    return this.filteredSubjects.slice(start, start + this.pageSize());
   }
 
   openCreateDrawer(): void {
     this.editMode.set(false);
-    this.formData.set({
-      name: '',
-      nameAr: '',
-      address: '',
-      capacity: 0,
-      phone: ''
-    });
+    this.selectedSubject.set(null);
+    this.formData.set({ name: '', noteMax: 20, isActive: true });
     this.showDrawer.set(true);
   }
 
-  openEditDrawer(center: ExamCenter): void {
+  openEditDrawer(subject: Subject): void {
     this.editMode.set(true);
-    this.selectedCenter.set(center);
-    this.formData.set({
-      name: center.name,
-      nameAr: center.nameAr || '',
-      address: center.address,
-      capacity: center.capacity,
-      phone: center.phone || ''
-    });
+    this.selectedSubject.set(subject);
+    this.formData.set({ name: subject.name, noteMax: subject.noteMax ?? 20, isActive: subject.isActive });
     this.showDrawer.set(true);
   }
 
   closeDrawer(): void {
     this.showDrawer.set(false);
-    this.selectedCenter.set(null);
+    this.selectedSubject.set(null);
   }
 
-  saveCenter(): void {
+  saveSubject(): void {
+    const payload = this.formData();
     this.loading.set(true);
 
-    if (this.editMode() && this.selectedCenter()) {
-      this.examCenterService.update(this.selectedCenter()!.id, this.formData()).subscribe({
+    if (this.editMode() && this.selectedSubject()) {
+      this.subjectService.update(this.selectedSubject()!.id, payload).subscribe({
         next: () => {
-          this.loadCenters();
+          this.loadSubjects();
           this.closeDrawer();
         },
         error: (err) => {
-          console.error('Erreur mise à jour centre', err);
+          console.error('Erreur mise à jour matière', err);
           this.loading.set(false);
-        }
-      });
-    } else {
-      this.examCenterService.create(this.formData()).subscribe({
-        next: () => {
-          this.loadCenters();
-          this.closeDrawer();
         },
-        error: (err) => {
-          console.error('Erreur création centre', err);
-          this.loading.set(false);
-        }
       });
+      return;
     }
+
+    this.subjectService.create(payload).subscribe({
+      next: () => {
+        this.loadSubjects();
+        this.closeDrawer();
+      },
+      error: (err) => {
+        console.error('Erreur création matière', err);
+        this.loading.set(false);
+      },
+    });
   }
 
-  deleteCenter(id: string): void {
+  deleteSubject(id: string): void {
     this.openDialog({
       title: 'Suppression',
-      message: 'Êtes-vous sûr de vouloir supprimer ce centre d\'examen ?',
+      message: 'Êtes-vous sûr de vouloir supprimer cette matière ?',
       variant: 'confirm',
       onConfirm: () => {
         this.loading.set(true);
-        this.examCenterService.delete(id).subscribe({
-          next: () => this.loadCenters(),
+        this.subjectService.delete(id).subscribe({
+          next: () => this.loadSubjects(),
           error: (err) => {
-            console.error('Erreur suppression centre', err);
-            const message = err?.error?.message || 'Erreur lors de la suppression du centre.';
+            console.error('Erreur suppression matière', err);
+            const message = err?.error?.message || 'Erreur lors de la suppression de la matière.';
             this.openDialog({
               title: 'Suppression impossible',
               message,
@@ -202,5 +188,14 @@ export class ExamCentersComponent implements OnInit {
         });
       },
     });
+  }
+
+  openMobileDetails(subject: Subject): void {
+    this.mobileSelectedSubject.set(subject);
+    this.mobileSheetOpen.set(true);
+  }
+
+  closeMobileDetails(): void {
+    this.mobileSheetOpen.set(false);
   }
 }

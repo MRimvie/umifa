@@ -1,0 +1,21 @@
+<div class="card overflow-hidden">
+  <div *ngIf="loading" class="p-4">
+    <div class="text-sm text-gray-600">Chargement...</div>
+  </div>
+
+  <div *ngIf="!loading && items.length === 0" class="p-4">
+    <div class="text-sm text-gray-600">Aucun élément.</div>
+  </div>
+
+  <div *ngIf="!loading && items.length > 0" class="divide-y divide-gray-200 bg-white">
+    <button
+      *ngFor="let item of items"
+      type="button"
+      class="w-full text-left px-4 py-3 hover:bg-gray-50"
+      (click)="onSelect(item)">
+      <ng-container
+        [ngTemplateOutlet]="summaryTemplate"
+        [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+    </button>
+  </div>
+</div>

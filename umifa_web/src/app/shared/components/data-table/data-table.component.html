@@ -1,0 +1,35 @@
+<div class="card overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-200 bg-white">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <ng-content select="[table-filters]"></ng-content>
+      </div>
+
+      <div class="flex items-center justify-between sm:justify-end gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-600">{{ 'dataTable.show' | translate }}</span>
+          <select
+            class="input-field h-9 py-1"
+            [ngModel]="pageSize"
+            (ngModelChange)="onPageSizeChange($event)">
+            <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" class="btn-secondary px-3" [disabled]="loading || !canGoPrev()" (click)="goPrev()">
+            ←
+          </button>
+          <span class="text-sm text-gray-700">{{ currentPageLabel }}</span>
+          <button type="button" class="btn-secondary px-3" [disabled]="loading || !canGoNext()" (click)="goNext()">
+            →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <ng-content></ng-content>
+  </div>
+</div>

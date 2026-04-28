@@ -224,9 +224,12 @@ export class GradesComponent implements OnInit {
     return typeof existing?.score === 'number' ? existing.score : '';
   }
 
-  setDraftValue(candidateId: string, subject: string, value: number | ''): void {
+  setDraftValue(candidateId: string, subject: string, value: number | '', noteMax?: number): void {
     const key = this.draftKey(candidateId, subject);
-    this.gradeValueDrafts.set({ ...this.gradeValueDrafts(), [key]: value });
+    const clamped = (value !== '' && noteMax !== undefined && Number(value) > noteMax)
+      ? noteMax
+      : value;
+    this.gradeValueDrafts.set({ ...this.gradeValueDrafts(), [key]: clamped });
   }
 
   saveInlineGrade(candidateId: string, subject: string, existing?: Grade): void {
@@ -237,10 +240,12 @@ export class GradesComponent implements OnInit {
     const score = Number(value);
     if (Number.isNaN(score)) return;
 
+    const subjectNoteMax = this.subjects().find((s) => s.name === subject)?.noteMax ?? 20;
+
     this.loading.set(true);
 
     if (existing?.id) {
-      this.gradeService.update(existing.id, { score, subject, candidateId, maxScore: existing.maxScore ?? 20 }).subscribe({
+      this.gradeService.update(existing.id, { score, subject, candidateId, maxScore: existing.maxScore ?? subjectNoteMax }).subscribe({
         next: () => this.refreshCenterData(),
         error: (err) => {
           console.error('Erreur mise à jour note', err);
@@ -250,7 +255,7 @@ export class GradesComponent implements OnInit {
       return;
     }
 
-    this.gradeService.create({ candidateId, subject, score, maxScore: 20 }).subscribe({
+    this.gradeService.create({ candidateId, subject, score, maxScore: subjectNoteMax }).subscribe({
       next: () => this.refreshCenterData(),
       error: (err) => {
         console.error('Erreur création note', err);

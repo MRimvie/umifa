@@ -97,10 +97,10 @@
               <input
                 type="number"
                 min="0"
-                max="20"
+                [max]="s.noteMax"
                 class="input-field h-9 py-1"
                 [ngModel]="getDraftValue(r.candidateId, s.name, r.gradesBySubject[s.name])"
-                (ngModelChange)="setDraftValue(r.candidateId, s.name, $event)"
+                (ngModelChange)="setDraftValue(r.candidateId, s.name, $event, s.noteMax)"
                 (blur)="saveInlineGrade(r.candidateId, s.name, r.gradesBySubject[s.name])" />
             </div>
           </div>
@@ -134,10 +134,10 @@
               <input
                 type="number"
                 min="0"
-                max="20"
+                [max]="s.noteMax"
                 class="input-field h-7 py-0 px-1 w-14 text-sm text-center"
                 [ngModel]="getDraftValue(r.candidateId, s.name, r.gradesBySubject[s.name])"
-                (ngModelChange)="setDraftValue(r.candidateId, s.name, $event)"
+                (ngModelChange)="setDraftValue(r.candidateId, s.name, $event, s.noteMax)"
                 (blur)="saveInlineGrade(r.candidateId, s.name, r.gradesBySubject[s.name])" />
             </td>
           </tr>
