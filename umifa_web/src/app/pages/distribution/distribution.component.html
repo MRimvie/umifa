@@ -1,0 +1,277 @@
+<div class="space-y-4 animate-fade-in">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">{{ 'distribution.title' | translate }}</h1>
+      <p class="text-gray-600 mt-1">{{ 'distribution.subtitle' | translate }}</p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <button (click)="generatePV()" [disabled]="loading()" class="btn-secondary w-full sm:w-auto">
+        {{ 'distribution.generatePV' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'distribution.schoolYear' | translate }}</label>
+          <select
+            class="input-field"
+            [ngModel]="selectedSchoolYearId()"
+            (ngModelChange)="selectedSchoolYearId.set($event); refresh()">
+            <option value="">{{ 'common.select' | translate }}</option>
+            <option *ngFor="let y of schoolYears()" [value]="y.id">{{ y.year }}</option>
+          </select>
+        </div>
+
+        <div class="flex items-end" *ngIf="distribution() as d">
+          <div class="w-full">
+            <div class="text-xs text-gray-500">{{ 'distribution.unassigned' | translate }}</div>
+            <div class="text-2xl font-bold text-gray-900">{{ d.unassignedCount }}</div>
+          </div>
+        </div>
+
+        <div class="flex items-end" *ngIf="distribution() as d">
+          <div class="w-full">
+            <div class="text-xs text-gray-500">{{ 'distribution.missingPV' | translate }}</div>
+            <div class="text-2xl font-bold text-gray-900">{{ d.missingPvCount }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading() && !distribution()" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    <p class="mt-4 text-gray-600">{{ 'distribution.loading' | translate }}</p>
+  </div>
+
+  <details class="card" *ngIf="distribution() as d">
+    <summary class="p-4 cursor-pointer select-none">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div>
+          <div class="text-base font-semibold text-gray-900">{{ 'distribution.manualTitle' | translate }}</div>
+          <div class="text-sm text-gray-600">{{ 'distribution.manualHint' | translate }}</div>
+        </div>
+        <div class="text-sm text-gray-500">
+          {{ selectedSchoolIds().length }} {{ 'distribution.selected' | translate }}
+        </div>
+      </div>
+    </summary>
+
+    <div class="px-6 pb-6 pt-2 space-y-4 border-t border-gray-200">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div class="md:col-span-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'distribution.targetCenter' | translate }}</label>
+
+          <div class="relative" data-center-dropdown>
+            <button
+              type="button"
+              class="input-field w-full flex items-center justify-between"
+              [disabled]="loading()"
+              (click)="openCenterDropdown()">
+              <span class="truncate text-left" [class.text-gray-400]="!selectedCenterId()">
+                {{ selectedCenterId() ? selectedCenterLabel : ('common.select' | translate) }}
+              </span>
+              <span class="text-gray-400">▾</span>
+            </button>
+
+            <div
+              *ngIf="centerDropdownOpen()"
+              class="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+              <div class="p-2 border-b border-gray-100">
+                <input
+                  class="input-field h-9 py-1"
+                  [ngModel]="centerQuery()"
+                  (ngModelChange)="centerQuery.set($event)"
+                  [placeholder]="'common.search' | translate" />
+              </div>
+              <div class="max-h-60 overflow-auto">
+                <button
+                  *ngFor="let c of filteredCenters"
+                  type="button"
+                  class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                  (click)="selectCenter(c.id)">
+                  {{ c.name }}
+                </button>
+                <div *ngIf="filteredCenters.length === 0" class="px-3 py-2 text-sm text-gray-500">
+                  {{ 'distribution.noCenter' | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-8">
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'distribution.schoolsToAssign' | translate }}</label>
+
+          <div class="relative" data-school-dropdown>
+            <button
+              type="button"
+              class="input-field w-full flex items-center justify-between"
+              [disabled]="loading()"
+              (click)="openSchoolDropdown()">
+              <span class="truncate text-left" [class.text-gray-400]="selectedSchoolIds().length === 0">
+                {{ selectedSchoolIds().length > 0 ? selectedSchoolsLabel : ('common.select' | translate) }}
+              </span>
+              <span class="text-gray-400">▾</span>
+            </button>
+
+            <div
+              *ngIf="schoolDropdownOpen()"
+              class="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+              <div class="p-2 border-b border-gray-100">
+                <input
+                  class="input-field h-9 py-1"
+                  [ngModel]="schoolQuery()"
+                  (ngModelChange)="schoolQuery.set($event)"
+                  [placeholder]="'common.search' | translate" />
+              </div>
+
+              <div class="max-h-60 overflow-auto">
+                <label
+                  *ngFor="let s of filteredSchools"
+                  class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4"
+                    [checked]="selectedSchoolIds().includes(s.id)"
+                    (change)="toggleSchoolSelection(s.id)"
+                    [disabled]="loading()" />
+                  <span class="text-gray-900">{{ s.name }}</span>
+                </label>
+                <div *ngIf="filteredSchools.length === 0" class="px-3 py-2 text-sm text-gray-500">
+                  {{ 'distribution.noSchool' | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="btn-primary" [disabled]="loading()" (click)="applySchoolToCenter()">
+          {{ 'distribution.apply' | translate }}
+        </button>
+        <button type="button" class="btn-secondary" [disabled]="loading()" (click)="clearManualSelection()">
+          {{ 'distribution.reset' | translate }}
+        </button>
+      </div>
+    </div>
+  </details>
+
+  <app-data-table
+    *ngIf="distribution() as d"
+    [loading]="loading()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [totalItems]="d.centers.length"
+    (pageIndexChange)="setPageIndex($event)"
+    (pageSizeChange)="setPageSize($event)">
+
+    <div table-filters class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-600">{{ 'distribution.schoolYear' | translate }}</label>
+        <select
+          class="input-field h-9 py-1"
+          [ngModel]="selectedSchoolYearId()"
+          (ngModelChange)="selectedSchoolYearId.set($event); refresh()">
+          <option value="">{{ 'common.select' | translate }}</option>
+          <option *ngFor="let y of schoolYears()" [value]="y.id">{{ y.year }}</option>
+        </select>
+      </div>
+
+      <button (click)="refresh()" [disabled]="loading()" class="btn-secondary h-9 py-1">{{ 'common.refresh' | translate }}</button>
+    </div>
+
+    <div class="md:hidden">
+      <ng-template #distSummary let-c>
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-gray-900 truncate">{{ c.name }}</div>
+            <div class="text-xs text-gray-600 truncate">{{ 'distribution.assigned' | translate }}: {{ c.assigned }}</div>
+          </div>
+          <div class="text-xs text-gray-500">{{ 'common.see' | translate }}</div>
+        </div>
+      </ng-template>
+
+      <app-mobile-list
+        [items]="pagedCenters"
+        [loading]="loading()"
+        [summaryTemplate]="distSummary"
+        (selectItem)="openMobileDetails($event)">
+      </app-mobile-list>
+
+      <app-bottom-sheet
+        [open]="mobileSheetOpen()"
+        (openChange)="mobileSheetOpen.set($event)"
+        [title]="mobileSelectedCenter()?.name || ''">
+        <div *ngIf="mobileSelectedCenter() as c" class="space-y-3">
+          <div class="grid grid-cols-1 gap-3">
+            <div>
+              <div class="text-xs text-gray-500">{{ 'distribution.assigned' | translate }}</div>
+              <div class="text-sm text-gray-900">{{ c.assigned }}</div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">{{ 'common.close' | translate }}</button>
+          </div>
+        </div>
+      </app-bottom-sheet>
+    </div>
+
+    <div class="hidden md:block">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'distribution.center' | translate }}</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'distribution.assigned' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let c of pagedCenters" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ c.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">{{ c.assigned }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+
+  <div *ngIf="dialogOpen()" class="fixed inset-0 z-[60]">
+    <div class="absolute inset-0 bg-gray-900/40" (click)="closeDialog()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="w-full max-w-lg rounded-xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">{{ dialogTitle() }}</h3>
+          <button class="p-2 rounded-lg hover:bg-gray-100" (click)="closeDialog()" type="button">×</button>
+        </div>
+
+        <div class="px-6 py-4 space-y-3">
+          <p class="text-sm text-gray-700">{{ dialogMessage() }}</p>
+
+          <div *ngIf="dialogItems().length > 0" class="max-h-64 overflow-auto rounded-lg border border-gray-200">
+            <ul class="divide-y divide-gray-200">
+              <li *ngFor="let item of dialogItems()" class="px-4 py-2 text-sm text-gray-800">{{ item }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
+          <button type="button" class="btn-secondary" (click)="closeDialog()">
+            {{ dialogVariant() === 'confirm' ? ('dialog.cancel' | translate) : ('dialog.close' | translate) }}
+          </button>
+          <button
+            *ngIf="dialogVariant() === 'confirm'"
+            type="button"
+            class="btn-primary"
+            (click)="confirmDialog()">
+            {{ 'dialog.confirm' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
