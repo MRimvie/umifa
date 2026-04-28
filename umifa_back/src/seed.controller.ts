@@ -1,14 +1,17 @@
 import { Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PrismaService } from './prisma/prisma.service';
 import { UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import type { Request } from 'express';
 
+@ApiTags('seed')
 @Controller('seed')
 export class SeedController {
   constructor(private prisma: PrismaService) {}
 
   @Get('status')
+  @ApiOperation({ summary: 'Statut de la base de données' })
   async status() {
     const dbInfo = await this.prisma.$queryRaw<
       Array<{ current_database: string; current_schema: string }>
@@ -25,6 +28,7 @@ export class SeedController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Créer les 3 comptes de base (admin, manager, correcteur)' })
   async seed(@Req() req: Request) {
     try {
       if (process.env.SEED_KEY && process.env.NODE_ENV === 'production') {
@@ -94,19 +98,6 @@ export class SeedController {
           isActive: true,
         },
       });
-
-      const subjectModel = (this.prisma as any).subject;
-      if (subjectModel?.upsert) {
-        await Promise.all(
-          ['Mathématiques', 'Lecture', 'Écriture', 'Arabe'].map((name) =>
-            subjectModel.upsert({
-              where: { name },
-              update: { isActive: true },
-              create: { name, isActive: true },
-            }),
-          ),
-        );
-      }
 
       return {
         success: true,

@@ -1,0 +1,228 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Header -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Centres d'Examen</h1>
+      <p class="text-gray-600 mt-1">Gérez les centres d'examen pour le CEP Arabe</p>
+    </div>
+    <button (click)="openCreateDrawer()" class="btn-primary w-full sm:w-auto">
+      <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouveau centre
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading() && centers().length === 0" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    <p class="mt-4 text-gray-600">Chargement des centres...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && centers().length === 0" class="text-center py-12 bg-gray-50 rounded-lg">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun centre d'examen</h3>
+    <p class="mt-1 text-sm text-gray-500">Commencez par créer un nouveau centre d'examen.</p>
+    <div class="mt-6">
+      <button (click)="openCreateDrawer()" class="btn-primary">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Créer un centre
+      </button>
+    </div>
+  </div>
+
+  <app-data-table
+    *ngIf="centers().length > 0"
+    [loading]="loading()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [totalItems]="filteredCenters.length"
+    (pageIndexChange)="setPageIndex($event)"
+    (pageSizeChange)="setPageSize($event)">
+
+    <div table-filters class="flex flex-wrap items-center gap-2">
+      <input
+        class="input-field h-9 py-1"
+        type="text"
+        placeholder="Filtrer (nom, adresse)..."
+        [ngModel]="queryFilter()"
+        (ngModelChange)="queryFilter.set($event); onChangeFilters()" />
+    </div>
+
+    <div class="md:hidden">
+      <ng-template #centerSummary let-c>
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-gray-900 truncate">{{ c.name }}</div>
+            <div class="text-xs text-gray-600 truncate">{{ c.address }}</div>
+          </div>
+          <div class="text-xs text-gray-500">Voir</div>
+        </div>
+      </ng-template>
+
+      <app-mobile-list
+        [items]="pagedCenters"
+        [loading]="loading()"
+        [summaryTemplate]="centerSummary"
+        (selectItem)="openMobileDetails($event)">
+      </app-mobile-list>
+
+      <app-bottom-sheet
+        [open]="mobileSheetOpen()"
+        (openChange)="mobileSheetOpen.set($event)"
+        [title]="mobileSelectedCenter()?.name || ''">
+        <div *ngIf="mobileSelectedCenter() as c" class="space-y-3">
+          <div class="grid grid-cols-1 gap-3">
+            <div>
+              <div class="text-xs text-gray-500">Adresse</div>
+              <div class="text-sm text-gray-900">{{ c.address }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">Téléphone</div>
+              <div class="text-sm text-gray-900">{{ c.phone || '—' }}</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button type="button" class="btn-primary w-full" (click)="openEditDrawer(c); closeMobileDetails()">Modifier</button>
+            <button type="button" class="btn-secondary w-full" (click)="deleteCenter(c.id); closeMobileDetails()">Supprimer</button>
+            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">Fermer</button>
+          </div>
+        </div>
+      </app-bottom-sheet>
+    </div>
+
+    <div class="hidden md:block">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let center of pagedCenters" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ center.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ center.address }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ center.phone || '—' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button (click)="openEditDrawer(center)" class="text-primary-600 hover:text-primary-900 mr-3">
+                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button (click)="deleteCenter(center.id)" class="text-red-600 hover:text-red-900">
+                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+</div>
+
+<!-- Drawer (Panneau latéral) -->
+<div *ngIf="showDrawer()" class="fixed inset-0 overflow-hidden z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeDrawer()"></div>
+
+    <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+      <div class="pointer-events-auto w-screen max-w-md transform transition ease-in-out duration-300">
+        <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+          <!-- Header -->
+          <div class="bg-purple-600 px-4 py-6 sm:px-6">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-medium text-white">
+                {{ editMode() ? 'Modifier le centre' : 'Nouveau centre d\'examen' }}
+              </h2>
+              <button (click)="closeDrawer()" class="text-purple-200 hover:text-white">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <p class="mt-1 text-sm text-purple-100">
+              {{ editMode() ? 'Modifiez les informations du centre' : 'Ajoutez un nouveau centre d\'examen' }}
+            </p>
+          </div>
+
+          <!-- Form -->
+          <div class="relative flex-1 px-4 py-6 sm:px-6">
+            <form class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nom du centre *</label>
+            <input type="text" [(ngModel)]="formData().name" name="name" required
+                   class="input-field"
+                   placeholder="Centre A Fada">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Quartier *</label>
+            <textarea [(ngModel)]="formData().address" name="address" required rows="2"
+                      class="input-field"
+                      placeholder="Tampouy"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+            <input type="tel" [(ngModel)]="formData().phone" name="phone"
+                   class="input-field"
+                   placeholder="01 23 45 67 89">
+          </div>
+            </form>
+          </div>
+
+          <!-- Footer -->
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-200 bg-gray-50">
+            <button (click)="closeDrawer()" type="button" class="btn-secondary mr-3">
+              Annuler
+            </button>
+            <button (click)="saveCenter()" [disabled]="loading()" class="btn-primary">
+              <span *ngIf="!loading()">{{ editMode() ? 'Mettre à jour' : 'Créer' }}</span>
+              <span *ngIf="loading()">Enregistrement...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="dialogOpen()" class="fixed inset-0 z-[60]">
+  <div class="absolute inset-0 bg-gray-900/40" (click)="closeDialog()"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg rounded-xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">{{ dialogTitle() }}</h3>
+        <button class="p-2 rounded-lg hover:bg-gray-100" (click)="closeDialog()" type="button">×</button>
+      </div>
+
+      <div class="px-6 py-4 space-y-3">
+        <p class="text-sm text-gray-700">{{ dialogMessage() }}</p>
+      </div>
+
+      <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
+        <button type="button" class="btn-secondary" (click)="closeDialog()">
+          {{ dialogVariant() === 'confirm' ? 'Annuler' : 'Fermer' }}
+        </button>
+        <button
+          *ngIf="dialogVariant() === 'confirm'"
+          type="button"
+          class="btn-primary"
+          (click)="confirmDialog()">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

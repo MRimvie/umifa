@@ -1,0 +1,317 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Header -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Gestion des Candidats</h1>
+      <p class="text-gray-600 mt-1">Inscrivez et gérez les candidats au CEP Arabe</p>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <button (click)="openCreateDrawer()" class="btn-primary w-full sm:w-auto">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nouveau candidat
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading() && candidates().length === 0" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    <p class="mt-4 text-gray-600">Chargement des candidats...</p>
+  </div>
+
+  <div class="card p-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <select
+        class="input-field h-9 py-1"
+        [ngModel]="selectedSchoolYearIdFilter()"
+        (ngModelChange)="selectedSchoolYearIdFilter.set($event); onChangeFilters()">
+        <option [ngValue]="''">Toutes les années</option>
+        <option *ngFor="let y of schoolYears()" [ngValue]="y.id">{{ y.year }}</option>
+      </select>
+
+      <select
+        class="input-field h-9 py-1"
+        [ngModel]="selectedCenterIdFilter()"
+        (ngModelChange)="selectedCenterIdFilter.set($event); onChangeFilters()">
+        <option [ngValue]="''">Tous les centres</option>
+        <option *ngFor="let c of centers()" [ngValue]="c.id">{{ c.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Candidates Table -->
+  <app-data-table
+    *ngIf="candidates().length > 0"
+    [loading]="loading()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [totalItems]="candidates().length"
+    (pageIndexChange)="setPageIndex($event)"
+    (pageSizeChange)="setPageSize($event)">
+
+    <div table-filters class="flex flex-wrap items-center gap-2"></div>
+
+    <div class="md:hidden">
+      <ng-template #candidateSummary let-c>
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-gray-900 truncate">{{ c.lastName }} {{ c.firstName }}</div>
+            <div class="text-xs text-gray-600 truncate">{{ c.school?.name || 'N/A' }} • {{ c.center?.name || 'Non affecté' }}</div>
+          </div>
+          <div class="text-xs text-gray-500">Voir</div>
+        </div>
+      </ng-template>
+
+      <app-mobile-list
+        [items]="pagedCandidates"
+        [loading]="loading()"
+        [summaryTemplate]="candidateSummary"
+        (selectItem)="openMobileDetails($event)">
+      </app-mobile-list>
+
+      <app-bottom-sheet
+        [open]="mobileSheetOpen()"
+        (openChange)="mobileSheetOpen.set($event)"
+        [title]="(mobileSelectedCandidate()?.lastName || '') + ' ' + (mobileSelectedCandidate()?.firstName || '')">
+        <div *ngIf="mobileSelectedCandidate() as c" class="space-y-3">
+          <div class="grid grid-cols-1 gap-3">
+            <div>
+              <div class="text-xs text-gray-500">Genre</div>
+              <div class="text-sm text-gray-900">{{ c.gender }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">Année naissance</div>
+              <div class="text-sm text-gray-900">{{ c.dateOfBirth ? (c.dateOfBirth | date:'yyyy') : 'N/A' }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">École</div>
+              <div class="text-sm text-gray-900">{{ c.school?.name || 'N/A' }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">Année scolaire</div>
+              <div class="text-sm text-gray-900">{{ c.schoolYear?.year || 'N/A' }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">Centre</div>
+              <div class="text-sm text-gray-900">{{ c.center?.name || '-' }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">N° PV</div>
+              <div class="text-sm text-gray-900">{{ c.numeroPV || '-' }}</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button type="button" class="btn-primary w-full" (click)="openEditDrawer(c); closeMobileDetails()">Modifier</button>
+            <button type="button" class="btn-secondary w-full" (click)="deleteCandidate(c.id); closeMobileDetails()">Supprimer</button>
+            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">Fermer</button>
+          </div>
+        </div>
+      </app-bottom-sheet>
+    </div>
+
+    <div class="hidden md:block">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Année naissance</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">École</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Année scolaire</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Centre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° PV</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let candidate of pagedCandidates" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ candidate.lastName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ candidate.firstName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <span class="px-2 py-1 rounded-full text-xs"
+                    [class]="candidate.gender === 'MASCULIN' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'">
+                {{ candidate.gender === 'MASCULIN' ? 'M' : 'F' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ candidate.dateOfBirth ? (candidate.dateOfBirth | date:'yyyy') : 'N/A' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ candidate.school?.name || 'N/A' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ candidate.schoolYear?.year || 'N/A' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ candidate.center?.name || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ candidate.numeroPV || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button (click)="openEditDrawer(candidate)" class="text-primary-600 hover:text-primary-900 mr-3">
+                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button (click)="deleteCandidate(candidate.id)" class="text-red-600 hover:text-red-900">
+                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+
+  <div *ngIf="!loading() && candidates().length === 0" class="text-center py-12 bg-gray-50 rounded-lg">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun candidat trouvé</h3>
+    <p class="mt-1 text-sm text-gray-500">Modifie les filtres pour afficher d'autres candidats.</p>
+  </div>
+</div>
+
+<!-- Drawer (Panneau latéral) -->
+<div *ngIf="showDrawer()" class="relative z-50" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 overflow-hidden">
+    <!-- Background overlay -->
+    <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeDrawer()"></div>
+
+    <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+      <!-- Drawer panel -->
+      <div class="pointer-events-auto w-screen max-w-md transform transition ease-in-out duration-300">
+        <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+          <!-- Header -->
+          <div class="bg-primary-600 px-4 py-6 sm:px-6">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-medium text-white" id="slide-over-title">
+                {{ editMode() ? 'Modifier le candidat' : 'Nouveau candidat' }}
+              </h2>
+              <button (click)="closeDrawer()" class="text-primary-200 hover:text-white">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <p class="mt-1 text-sm text-primary-100">
+              {{ editMode() ? 'Modifiez les informations du candidat' : 'Remplissez les informations du candidat' }}
+            </p>
+          </div>
+
+          <!-- Form -->
+          <div class="relative flex-1 px-4 py-6 sm:px-6">
+            <form class="space-y-6">
+              <!-- Nom et Prénom -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+                  <input type="text" [(ngModel)]="formData().lastName" name="lastName" required
+                         class="input-field" placeholder="ZONGO">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
+                  <input type="text" [(ngModel)]="formData().firstName" name="firstName" required
+                         class="input-field" placeholder="Ahmed">
+                </div>
+              </div>
+
+              <!-- Genre -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Genre *</label>
+                <select [(ngModel)]="formData().gender" name="gender" required class="input-field">
+                  <option value="MASCULIN">Masculin</option>
+                  <option value="FEMININ">Féminin</option>
+                </select>
+              </div>
+
+              <!-- Date et lieu de naissance -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance *</label>
+                  <input type="date" [(ngModel)]="formData().dateOfBirth" name="dateOfBirth" required
+                         class="input-field">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Lieu de naissance *</label>
+                  <input type="text" [(ngModel)]="formData().placeOfBirth" name="placeOfBirth" required
+                         class="input-field" placeholder="Ouagadougou">
+                </div>
+              </div>
+
+              <!-- Nationalité -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nationalité *</label>
+                <input type="text" [(ngModel)]="formData().nationality" name="nationality" required
+                       class="input-field" placeholder="Burkinabé">
+              </div>
+
+              <!-- École -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">École *</label>
+                <select [(ngModel)]="formData().schoolId" name="schoolId" required class="input-field">
+                  <option value="">Sélectionner une école</option>
+                  <option *ngFor="let school of schools()" [value]="school.id">{{ school.name }}</option>
+                </select>
+              </div>
+
+              <!-- Année scolaire -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Année scolaire *</label>
+                <select [(ngModel)]="formData().schoolYearId" name="schoolYearId" required class="input-field">
+                  <option value="">Sélectionner une année</option>
+                  <option *ngFor="let year of schoolYears()" [value]="year.id">{{ year.year }}</option>
+                </select>
+              </div>
+            </form>
+          </div>
+
+          <!-- Footer -->
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-200 bg-gray-50">
+            <button (click)="closeDrawer()" type="button" class="btn-secondary mr-3">
+              Annuler
+            </button>
+            <button (click)="saveCandidate()" [disabled]="loading()" class="btn-primary">
+              <span *ngIf="!loading()">{{ editMode() ? 'Mettre à jour' : 'Créer' }}</span>
+              <span *ngIf="loading()">Enregistrement...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="dialogOpen()" class="fixed inset-0 z-[60]">
+    <div class="absolute inset-0 bg-gray-900/40" (click)="closeDialog()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="w-full max-w-lg rounded-xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">{{ dialogTitle() }}</h3>
+          <button class="p-2 rounded-lg hover:bg-gray-100" (click)="closeDialog()" type="button">×</button>
+        </div>
+
+        <div class="px-6 py-4 space-y-3">
+          <p class="text-sm text-gray-700">{{ dialogMessage() }}</p>
+
+          <div *ngIf="dialogItems().length > 0" class="max-h-64 overflow-auto rounded-lg border border-gray-200">
+            <ul class="divide-y divide-gray-200">
+              <li *ngFor="let item of dialogItems()" class="px-4 py-2 text-sm text-gray-800">{{ item }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
+          <button type="button" class="btn-secondary" (click)="closeDialog()">
+            {{ dialogVariant() === 'confirm' ? 'Annuler' : 'Fermer' }}
+          </button>
+          <button
+            *ngIf="dialogVariant() === 'confirm'"
+            type="button"
+            class="btn-primary"
+            (click)="confirmDialog()">
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
