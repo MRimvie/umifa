@@ -5,11 +5,12 @@ import { ExamCenterService, ExamCenter, CreateExamCenterDto } from '../../core/s
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { MobileListComponent } from '../../shared/components/mobile-list/mobile-list.component';
 import { BottomSheetComponent } from '../../shared/components/bottom-sheet/bottom-sheet.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-exam-centers',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent, TranslateModule],
   templateUrl: './exam-centers.component.html',
   styleUrls: ['./exam-centers.component.scss']
 })
@@ -61,6 +62,7 @@ export class ExamCentersComponent implements OnInit {
   
   formData = signal<CreateExamCenterDto>({
     name: '',
+    nameAr: '',
     address: '',
     capacity: 0,
     phone: ''
@@ -124,6 +126,7 @@ export class ExamCentersComponent implements OnInit {
     this.editMode.set(false);
     this.formData.set({
       name: '',
+      nameAr: '',
       address: '',
       capacity: 0,
       phone: ''
@@ -136,6 +139,7 @@ export class ExamCentersComponent implements OnInit {
     this.selectedCenter.set(center);
     this.formData.set({
       name: center.name,
+      nameAr: center.nameAr || '',
       address: center.address,
       capacity: center.capacity,
       phone: center.phone || ''

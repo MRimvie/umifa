@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { CandidateService } from '../../core/services/candidate.service';
 import { SchoolService } from '../../core/services/school.service';
@@ -15,7 +16,7 @@ interface DashboardStats {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -23,6 +24,7 @@ export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
   private candidateService = inject(CandidateService);
   private schoolService = inject(SchoolService);
+  private translate = inject(TranslateService);
 
   stats = signal<DashboardStats>({
     totalCandidates: 0,
@@ -69,26 +71,15 @@ export class DashboardComponent implements OnInit {
   getWelcomeMessage(): string {
     const user = this.authService.currentUser();
     const hour = new Date().getHours();
-    let greeting = 'Bonjour';
-    
-    if (hour < 12) greeting = 'Bonjour';
-    else if (hour < 18) greeting = 'Bon après-midi';
-    else greeting = 'Bonsoir';
-
-    return `${greeting}, ${user?.firstName} ${user?.lastName}`;
+    let key = 'dashboard.greetingMorning';
+    if (hour >= 12 && hour < 18) key = 'dashboard.greetingAfternoon';
+    else if (hour >= 18) key = 'dashboard.greetingEvening';
+    return `${this.translate.instant(key)}, ${user?.firstName} ${user?.lastName}`;
   }
 
-  /**
-   * Retourne le rôle formaté
-   */
   getRoleLabel(): string {
     const role = this.authService.currentUser()?.role;
-    const roleLabels: Record<string, string> = {
-      'SUPER_ADMIN': 'Super Administrateur',
-      'SCHOOL_MANAGER': 'Responsable d\'école',
-      'GRADER': 'Correcteur',
-      'VIEWER': 'Observateur'
-    };
-    return roleLabels[role || ''] || role || '';
+    if (!role) return '';
+    return this.translate.instant(`dashboard.roles.${role}`) || role;
   }
 }

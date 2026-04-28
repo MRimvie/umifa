@@ -5,6 +5,7 @@ import { ApiService } from './api.service';
 export interface ExamCenter {
   id: string;
   name: string;
+  nameAr?: string;
   address: string;
   capacity: number;
   phone?: string;
@@ -14,6 +15,7 @@ export interface ExamCenter {
 
 export interface CreateExamCenterDto {
   name: string;
+  nameAr?: string;
   address: string;
   capacity: number;
   phone?: string;

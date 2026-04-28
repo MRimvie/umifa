@@ -7,8 +7,8 @@
   <div class="p-6 border-b border-gray-200">
     <div class="flex items-center justify-between">
       <div *ngIf="!isCollapsed()" class="flex items-center space-x-3 animate-fade-in">
-        <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-          <img class="w-8 h-8 object-contain" src="assets/logo.jpeg" alt="logo">
+        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+          <img class="w-10 h-10 object-cover" src="logo.jpeg" alt="logo">
         </div>
         <div>
           <h1 class="text-xl font-bold text-gray-900">UMIFA</h1>
@@ -39,7 +39,7 @@
       <span
         *ngIf="!isCollapsed()"
         class="font-medium animate-fade-in">
-        {{ item.label }}
+        {{ item.labelKey | translate }}
       </span>
     </a>
   </nav>
@@ -61,8 +61,14 @@
         </p>
       </div>
       <button
+        (click)="langService.toggle()"
+        [title]="'nav.toggleLang' | translate"
+        class="flex-shrink-0 px-2 py-1 rounded-md border border-primary-300 bg-primary-50 hover:bg-primary-100 text-primary-700 text-xs font-bold tracking-wide transition-colors">
+        {{ langService.currentLang() === 'fr' ? 'AR' : 'FR' }}
+      </button>
+      <button
         (click)="logout()"
-        [title]="isCollapsed() ? 'Déconnexion' : ''"
+        [title]="isCollapsed() ? ('nav.logout' | translate) : ''"
         class="p-2 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0 text-gray-700">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>

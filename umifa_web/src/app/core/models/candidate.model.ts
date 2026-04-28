@@ -21,6 +21,7 @@ export interface Candidate {
   center?: {
     id: string;
     name: string;
+    nameAr?: string;
   };
   grades?: Grade[];
   createdAt?: string;

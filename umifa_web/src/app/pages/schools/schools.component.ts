@@ -6,6 +6,7 @@ import { School } from '../../core/models/candidate.model';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { MobileListComponent } from '../../shared/components/mobile-list/mobile-list.component';
 import { BottomSheetComponent } from '../../shared/components/bottom-sheet/bottom-sheet.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface SchoolFormData {
   name: string;
@@ -18,7 +19,7 @@ interface SchoolFormData {
 @Component({
   selector: 'app-schools',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent, TranslateModule],
   templateUrl: './schools.component.html',
   styleUrls: ['./schools.component.scss']
 })

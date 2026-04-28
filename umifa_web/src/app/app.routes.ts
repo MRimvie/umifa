@@ -36,6 +36,11 @@ export const routes: Routes = [
         canActivate: [roleGuard(['SUPER_ADMIN', 'GRADER'])]
       },
       {
+        path: 'results',
+        loadComponent: () => import('./pages/results/results.component').then(m => m.ResultsComponent),
+        canActivate: [roleGuard(['SUPER_ADMIN', 'GRADER'])]
+      },
+      {
         path: 'grades/candidate/:id',
         loadComponent: () => import('./pages/grades/grade-candidate-details.component').then(m => m.GradeCandidateDetailsComponent),
         canActivate: [roleGuard(['SUPER_ADMIN', 'GRADER'])]

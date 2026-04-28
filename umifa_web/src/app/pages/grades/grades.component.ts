@@ -10,6 +10,7 @@ import { MobileListComponent } from '../../shared/components/mobile-list/mobile-
 import { BottomSheetComponent } from '../../shared/components/bottom-sheet/bottom-sheet.component';
 import { ExamCenterService, ExamCenter } from '../../core/services/exam-center.service';
 import { SubjectService, Subject } from '../../core/services/subject.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface GradeFormData {
   candidateId: string;
@@ -31,7 +32,7 @@ type CandidateRow = {
 @Component({
   selector: 'app-grades',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent, TranslateModule],
   templateUrl: './grades.component.html',
   styleUrls: ['./grades.component.scss']
 })
@@ -98,7 +99,7 @@ export class GradesComponent implements OnInit {
     comments: ''
   });
 
-  displayedSubjects = computed(() => this.subjects().filter((s) => s.isActive).slice(0, 4));
+  displayedSubjects = computed(() => this.subjects().filter((s) => s.isActive));
 
   private gradeValueDrafts = signal<Record<string, number | ''>>({});
 

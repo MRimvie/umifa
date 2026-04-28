@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -21,8 +21,9 @@ export class ApiService {
   /**
    * Effectue une requête POST
    */
-  post<T>(endpoint: string, body: any): Observable<T> {
-    return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body);
+  post<T>(endpoint: string, body: any, params?: any): Observable<T> {
+    const httpParams = this.buildParams(params);
+    return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body, { params: httpParams });
   }
 
   /**

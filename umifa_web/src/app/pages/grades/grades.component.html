@@ -2,32 +2,32 @@
   <!-- Header -->
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">Gestion des Notes</h1>
-      <p class="text-gray-600 mt-1">Saisissez et gérez les notes des candidats</p>
+      <h1 class="text-3xl font-bold text-gray-900">{{ 'grades.title' | translate }}</h1>
+      <p class="text-gray-600 mt-1">{{ 'grades.subtitle' | translate }}</p>
     </div>
     <button (click)="openCreateDrawer()" class="btn-primary w-full sm:w-auto">
       <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
       </svg>
-      Saisir une note
+      {{ 'grades.new' | translate }}
     </button>
   </div>
 
   <div class="card p-4">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600">Centre</label>
+        <label class="text-sm text-gray-600">{{ 'grades.center' | translate }}</label>
         <select
           class="input-field h-9 py-1"
           [ngModel]="selectedCenterId()"
           (ngModelChange)="onSelectCenter($event)">
-          <option value="">Sélectionner...</option>
+          <option value="">{{ 'common.select' | translate }}</option>
           <option *ngFor="let c of centers()" [value]="c.id">{{ c.name }}</option>
         </select>
       </div>
 
       <div class="flex items-center gap-2">
-        <button type="button" class="btn-secondary h-9 py-1" (click)="refreshCenterData()" [disabled]="loading()">Rafraîchir</button>
+        <button type="button" class="btn-secondary h-9 py-1" (click)="refreshCenterData()" [disabled]="loading()">{{ 'common.refresh' | translate }}</button>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <!-- Loading State -->
   <div *ngIf="loading() && candidates().length === 0" class="text-center py-12">
     <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-    <p class="mt-4 text-gray-600">Chargement des notes...</p>
+    <p class="mt-4 text-gray-600">{{ 'grades.loading' | translate }}</p>
   </div>
 
   <app-data-table
@@ -49,7 +49,7 @@
 
     <div table-filters class="flex flex-wrap items-center gap-2">
       <div class="text-sm text-gray-600">
-        {{ candidateRows().length }} candidat(s)
+        {{ candidateRows().length }} {{ 'grades.count' | translate }}
       </div>
     </div>
 
@@ -64,7 +64,7 @@
               {{ r.schoolName }}
             </div>
           </div>
-          <div class="text-xs text-gray-500">Voir</div>
+          <div class="text-xs text-gray-500">{{ 'common.see' | translate }}</div>
         </div>
       </ng-template>
 
@@ -82,11 +82,11 @@
         <div *ngIf="mobileSelectedRow() as r" class="space-y-3">
           <div class="grid grid-cols-1 gap-3">
             <div>
-              <div class="text-xs text-gray-500">Centre</div>
+              <div class="text-xs text-gray-500">{{ 'grades.center' | translate }}</div>
               <div class="text-sm text-gray-900">{{ r.centerName || '-' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500">École</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.school' | translate }}</div>
               <div class="text-sm text-gray-900">{{ r.schoolName || '-' }}</div>
             </div>
           </div>
@@ -106,36 +106,36 @@
           </div>
 
           <div class="flex flex-col gap-2">
-            <button type="button" class="btn-primary w-full" (click)="openCandidateDetails(r); closeMobileDetails()">Détails</button>
-            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">Fermer</button>
+            <button type="button" class="btn-primary w-full" (click)="openCandidateDetails(r); closeMobileDetails()">{{ 'grades.details' | translate }}</button>
+            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">{{ 'common.close' | translate }}</button>
           </div>
         </div>
       </app-bottom-sheet>
     </div>
 
-    <div class="hidden md:block">
+    <div class="hidden md:block overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidat</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">École</th>
-            <th *ngFor="let s of displayedSubjects()" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ s.name }}</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ 'grades.candidate' | translate }}</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ 'candidates.school' | translate }}</th>
+            <th *ngFor="let s of displayedSubjects()" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">{{ s.name }}</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr *ngFor="let r of pagedRows" class="hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
               <button type="button" class="text-primary-700 hover:text-primary-900" (click)="openCandidateDetails(r)">
                 {{ r.firstName }} {{ r.lastName }}
               </button>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ r.schoolName || '-' }}</td>
-            <td *ngFor="let s of displayedSubjects()" class="px-6 py-4 whitespace-nowrap">
+            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-600">{{ r.schoolName || '-' }}</td>
+            <td *ngFor="let s of displayedSubjects()" class="px-2 py-1 whitespace-nowrap">
               <input
                 type="number"
                 min="0"
                 max="20"
-                class="input-field h-9 py-1 w-24"
+                class="input-field h-7 py-0 px-1 w-14 text-sm text-center"
                 [ngModel]="getDraftValue(r.candidateId, s.name, r.gradesBySubject[s.name])"
                 (ngModelChange)="setDraftValue(r.candidateId, s.name, $event)"
                 (blur)="saveInlineGrade(r.candidateId, s.name, r.gradesBySubject[s.name])" />
@@ -151,14 +151,14 @@
     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
     </svg>
-    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun candidat</h3>
-    <p class="mt-1 text-sm text-gray-500">Aucun candidat n'est disponible pour l'instant.</p>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'grades.empty' | translate }}</h3>
+    <p class="mt-1 text-sm text-gray-500">{{ 'grades.emptyHint' | translate }}</p>
     <div class="mt-6">
       <button (click)="openCreateDrawer()" class="btn-primary">
         <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-        Saisir une note
+        {{ 'grades.new' | translate }}
       </button>
     </div>
   </div>
@@ -179,14 +179,14 @@
 
       <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
         <button type="button" class="btn-secondary" (click)="closeDialog()">
-          {{ dialogVariant() === 'confirm' ? 'Annuler' : 'Fermer' }}
+          {{ dialogVariant() === 'confirm' ? ('dialog.cancel' | translate) : ('dialog.close' | translate) }}
         </button>
         <button
           *ngIf="dialogVariant() === 'confirm'"
           type="button"
           class="btn-primary"
           (click)="confirmDialog()">
-          Confirmer
+          {{ 'dialog.confirm' | translate }}
         </button>
       </div>
     </div>
@@ -207,7 +207,7 @@
           <div class="bg-green-600 px-4 py-6 sm:px-6">
             <div class="flex items-center justify-between">
               <h2 class="text-lg font-medium text-white">
-                {{ editMode() ? 'Modifier la note' : 'Saisir une note' }}
+                {{ editMode() ? ('grades.editTitle' | translate) : ('grades.createTitle' | translate) }}
               </h2>
               <button (click)="closeDrawer()" class="text-green-200 hover:text-white">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,7 +216,7 @@
               </button>
             </div>
             <p class="mt-1 text-sm text-green-100">
-              {{ editMode() ? 'Modifiez la note du candidat' : 'Enregistrez la note du candidat' }}
+              {{ editMode() ? ('grades.editSubtitle' | translate) : ('grades.createSubtitle' | translate) }}
             </p>
           </div>
 
@@ -225,9 +225,9 @@
             <form class="space-y-6">
               <!-- Candidat -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Candidat *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'grades.candidate' | translate }} *</label>
                 <select [(ngModel)]="formData().candidateId" name="candidateId" required class="input-field">
-                  <option value="">Sélectionner un candidat</option>
+                  <option value="">{{ 'grades.selectCandidate' | translate }}</option>
                   <option *ngFor="let candidate of candidates()" [value]="candidate.id">
                     {{ candidate.firstName }} {{ candidate.lastName }} - {{ candidate.school?.name }}
                   </option>
@@ -236,9 +236,9 @@
 
               <!-- Matière -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Matière *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'grades.subject' | translate }} *</label>
                 <select [(ngModel)]="formData().subject" name="subject" required class="input-field">
-                  <option value="">Sélectionner une matière</option>
+                  <option value="">{{ 'grades.selectSubject' | translate }}</option>
                   <option *ngFor="let subject of subjects()" [value]="subject.name">{{ subject.name }}</option>
                 </select>
               </div>
@@ -246,12 +246,12 @@
               <!-- Note et Note maximale -->
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Note obtenue *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'grades.score' | translate }} *</label>
                   <input type="number" [(ngModel)]="formData().score" name="score" required min="0" [max]="formData().maxScore"
                          class="input-field" placeholder="15">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Note maximale *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'grades.maxScore' | translate }} *</label>
                   <input type="number" [(ngModel)]="formData().maxScore" name="maxScore" required min="1"
                          class="input-field" placeholder="20">
                 </div>
@@ -260,7 +260,7 @@
               <!-- Pourcentage (calculé) -->
               <div class="bg-gray-50 p-4 rounded-lg">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-gray-700">Pourcentage</span>
+                  <span class="text-sm font-medium text-gray-700">{{ 'grades.percentage' | translate }}</span>
                   <span class="text-2xl font-bold" [class]="getScoreColor(formData().score, formData().maxScore)">
                     {{ ((formData().score / formData().maxScore) * 100).toFixed(1) }}%
                   </span>
@@ -269,9 +269,9 @@
 
               <!-- Commentaires -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Commentaires</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.comments' | translate }}</label>
                 <textarea [(ngModel)]="formData().comments" name="comments" rows="3"
-                          class="input-field" placeholder="Remarques sur la performance du candidat..."></textarea>
+                          class="input-field" [placeholder]="'grades.commentsPlaceholder' | translate"></textarea>
               </div>
             </form>
           </div>
@@ -279,11 +279,11 @@
           <!-- Footer -->
           <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-200 bg-gray-50">
             <button (click)="closeDrawer()" type="button" class="btn-secondary mr-3">
-              Annuler
+              {{ 'common.cancel' | translate }}
             </button>
             <button (click)="saveGrade()" [disabled]="loading()" class="btn-primary">
-              <span *ngIf="!loading()">{{ editMode() ? 'Mettre à jour' : 'Enregistrer' }}</span>
-              <span *ngIf="loading()">Enregistrement...</span>
+              <span *ngIf="!loading()">{{ editMode() ? ('common.update' | translate) : ('common.save' | translate) }}</span>
+              <span *ngIf="loading()">{{ 'common.saving' | translate }}</span>
             </button>
           </div>
         </div>

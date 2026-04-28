@@ -8,7 +8,7 @@
       </div>
       <div class="hidden md:block">
         <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4">
-          <div class="text-sm text-primary-100">Année scolaire active</div>
+          <div class="text-sm text-primary-100">{{ 'dashboard.activeYear' | translate }}</div>
           <div class="text-2xl font-bold">{{ stats().activeYear }}</div>
         </div>
       </div>
@@ -21,7 +21,7 @@
     <div class="card hover:scale-105 transform transition-all duration-300 animate-slide-up">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-gray-500 text-sm font-medium mb-1">Total Candidats</p>
+          <p class="text-gray-500 text-sm font-medium mb-1">{{ 'dashboard.totalCandidates' | translate }}</p>
           <p class="text-3xl font-bold text-gray-900">{{ stats().totalCandidates }}</p>
         </div>
         <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-center text-sm">
-        <span class="text-green-600 font-medium">↗ Actif</span>
+        <span class="text-green-600 font-medium">{{ 'dashboard.activeTag' | translate }}</span>
       </div>
     </div>
 
@@ -39,7 +39,7 @@
     <div class="card hover:scale-105 transform transition-all duration-300 animate-slide-up" style="animation-delay: 0.1s">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-gray-500 text-sm font-medium mb-1">Écoles</p>
+          <p class="text-gray-500 text-sm font-medium mb-1">{{ 'dashboard.schools' | translate }}</p>
           <p class="text-3xl font-bold text-gray-900">{{ stats().totalSchools }}</p>
         </div>
         <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
@@ -49,7 +49,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-center text-sm">
-        <span class="text-gray-600">Médersas inscrites</span>
+        <span class="text-gray-600">{{ 'dashboard.schoolsSub' | translate }}</span>
       </div>
     </div>
 
@@ -57,7 +57,7 @@
     <div class="card hover:scale-105 transform transition-all duration-300 animate-slide-up" style="animation-delay: 0.2s">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-gray-500 text-sm font-medium mb-1">Centres d'examen</p>
+          <p class="text-gray-500 text-sm font-medium mb-1">{{ 'dashboard.examCenters' | translate }}</p>
           <p class="text-3xl font-bold text-gray-900">{{ stats().totalCenters }}</p>
         </div>
         <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -67,7 +67,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-center text-sm">
-        <span class="text-gray-600">Centres actifs</span>
+        <span class="text-gray-600">{{ 'dashboard.examCentersSub' | translate }}</span>
       </div>
     </div>
 
@@ -75,7 +75,7 @@
     <div class="card hover:scale-105 transform transition-all duration-300 animate-slide-up" style="animation-delay: 0.3s">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-gray-500 text-sm font-medium mb-1">Année Scolaire</p>
+          <p class="text-gray-500 text-sm font-medium mb-1">{{ 'dashboard.schoolYear' | translate }}</p>
           <p class="text-3xl font-bold text-gray-900">{{ stats().activeYear }}</p>
         </div>
         <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center">
@@ -85,7 +85,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-center text-sm">
-        <span class="text-green-600 font-medium">● En cours</span>
+        <span class="text-green-600 font-medium">{{ 'dashboard.inProgress' | translate }}</span>
       </div>
     </div>
   </div>
@@ -94,7 +94,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Actions rapides -->
     <div class="card animate-slide-up" style="animation-delay: 0.4s">
-      <h2 class="text-xl font-bold text-gray-900 mb-6">Actions rapides</h2>
+      <h2 class="text-xl font-bold text-gray-900 mb-6">{{ 'dashboard.quickActions' | translate }}</h2>
       <div class="space-y-3">
         <a routerLink="/candidates" class="flex items-center justify-between p-4 bg-gray-50 hover:bg-primary-50 rounded-lg transition-all duration-200 group cursor-pointer">
           <div class="flex items-center space-x-3">
@@ -104,8 +104,8 @@
               </svg>
             </div>
             <div>
-              <p class="font-medium text-gray-900">Inscrire un candidat</p>
-              <p class="text-sm text-gray-500">Ajouter un nouveau candidat</p>
+              <p class="font-medium text-gray-900">{{ 'dashboard.registerCandidate' | translate }}</p>
+              <p class="text-sm text-gray-500">{{ 'dashboard.registerCandidateSub' | translate }}</p>
             </div>
           </div>
           <svg class="w-5 h-5 text-gray-400 group-hover:text-primary-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,8 +121,8 @@
               </svg>
             </div>
             <div>
-              <p class="font-medium text-gray-900">Saisir des notes</p>
-              <p class="text-sm text-gray-500">Enregistrer les résultats</p>
+              <p class="font-medium text-gray-900">{{ 'dashboard.enterGrades' | translate }}</p>
+              <p class="text-sm text-gray-500">{{ 'dashboard.enterGradesSub' | translate }}</p>
             </div>
           </div>
           <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,8 +139,8 @@
               </svg>
             </div>
             <div>
-              <p class="font-medium text-gray-900">Gérer les écoles</p>
-              <p class="text-sm text-gray-500">Configuration des médersas</p>
+              <p class="font-medium text-gray-900">{{ 'dashboard.manageSchools' | translate }}</p>
+              <p class="text-sm text-gray-500">{{ 'dashboard.manageSchoolsSub' | translate }}</p>
             </div>
           </div>
           <svg class="w-5 h-5 text-gray-400 group-hover:text-purple-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,15 +152,15 @@
 
     <!-- Informations système -->
     <div class="card animate-slide-up" style="animation-delay: 0.5s">
-      <h2 class="text-xl font-bold text-gray-900 mb-6">Informations</h2>
+      <h2 class="text-xl font-bold text-gray-900 mb-6">{{ 'dashboard.info' | translate }}</h2>
       <div class="space-y-4">
         <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
           <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <div>
-            <p class="font-medium text-gray-900">Bienvenue sur UMIFA</p>
-            <p class="text-sm text-gray-600 mt-1">Plateforme de gestion du CEP Arabe pour l'Union des Medersas Islamiques Franco-Arabes</p>
+            <p class="font-medium text-gray-900">{{ 'dashboard.welcome' | translate }}</p>
+            <p class="text-sm text-gray-600 mt-1">{{ 'dashboard.welcomeSub' | translate }}</p>
           </div>
         </div>
 
@@ -169,8 +169,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <div>
-            <p class="font-medium text-gray-900">Système opérationnel</p>
-            <p class="text-sm text-gray-600 mt-1">Toutes les fonctionnalités sont disponibles</p>
+            <p class="font-medium text-gray-900">{{ 'dashboard.operational' | translate }}</p>
+            <p class="text-sm text-gray-600 mt-1">{{ 'dashboard.operationalSub' | translate }}</p>
           </div>
         </div>
 
@@ -179,8 +179,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
           </svg>
           <div>
-            <p class="font-medium text-gray-900">Documentation</p>
-            <p class="text-sm text-gray-600 mt-1">Consultez le guide utilisateur pour plus d'informations</p>
+            <p class="font-medium text-gray-900">{{ 'dashboard.documentation' | translate }}</p>
+            <p class="text-sm text-gray-600 mt-1">{{ 'dashboard.documentationSub' | translate }}</p>
           </div>
         </div>
       </div>

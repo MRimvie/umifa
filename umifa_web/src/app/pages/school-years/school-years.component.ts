@@ -5,16 +5,18 @@ import { SchoolYearService, SchoolYear, CreateSchoolYearDto, SchoolYearStatus } 
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { MobileListComponent } from '../../shared/components/mobile-list/mobile-list.component';
 import { BottomSheetComponent } from '../../shared/components/bottom-sheet/bottom-sheet.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-school-years',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent, MobileListComponent, BottomSheetComponent, TranslateModule],
   templateUrl: './school-years.component.html',
   styleUrls: ['./school-years.component.scss']
 })
 export class SchoolYearsComponent implements OnInit {
   private schoolYearService = inject(SchoolYearService);
+  private translate = inject(TranslateService);
   
   years = signal<SchoolYear[]>([]);
   loading = signal(false);
@@ -80,9 +82,9 @@ export class SchoolYearsComponent implements OnInit {
   }
 
   statusOptions = [
-    { value: SchoolYearStatus.INSCRIPTION, label: 'Inscription', color: 'blue' },
-    { value: SchoolYearStatus.EN_COURS, label: 'En cours', color: 'green' },
-    { value: SchoolYearStatus.TERMINEE, label: 'Terminée', color: 'gray' }
+    { value: SchoolYearStatus.INSCRIPTION, labelKey: 'schoolYears.statuses.INSCRIPTION', color: 'blue' },
+    { value: SchoolYearStatus.EN_COURS, labelKey: 'schoolYears.statuses.EN_COURS', color: 'green' },
+    { value: SchoolYearStatus.TERMINEE, labelKey: 'schoolYears.statuses.TERMINEE', color: 'gray' }
   ];
 
   ngOnInit(): void {
@@ -230,7 +232,7 @@ export class SchoolYearsComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const statusObj = this.statusOptions.find(s => s.value === status);
-    return statusObj?.label || status;
+    return statusObj ? this.translate.instant(statusObj.labelKey) : status;
   }
 
   getStatusBadgeClass(status: string): string {

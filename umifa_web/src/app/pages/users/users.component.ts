@@ -6,11 +6,12 @@ import { SchoolService } from '../../core/services/school.service';
 import { ExamCenterService } from '../../core/services/exam-center.service';
 import { MobileListComponent } from '../../shared/components/mobile-list/mobile-list.component';
 import { BottomSheetComponent } from '../../shared/components/bottom-sheet/bottom-sheet.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, MobileListComponent, BottomSheetComponent],
+  imports: [CommonModule, FormsModule, MobileListComponent, BottomSheetComponent, TranslateModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
@@ -18,6 +19,7 @@ export class UsersComponent implements OnInit {
   private userService = inject(UserService);
   private schoolService = inject(SchoolService);
   private examCenterService = inject(ExamCenterService);
+  private translate = inject(TranslateService);
 
   users = signal<User[]>([]);
   schools = signal<any[]>([]);
@@ -69,9 +71,9 @@ export class UsersComponent implements OnInit {
   });
 
   userRoles = [
-    { value: UserRole.SUPER_ADMIN, label: 'Super Administrateur' },
-    { value: UserRole.SCHOOL_MANAGER, label: 'Responsable d\'école' },
-    { value: UserRole.GRADER, label: 'Correcteur' }
+    { value: UserRole.SUPER_ADMIN, labelKey: 'users.roles.SUPER_ADMIN' },
+    { value: UserRole.SCHOOL_MANAGER, labelKey: 'users.roles.SCHOOL_MANAGER' },
+    { value: UserRole.GRADER, labelKey: 'users.roles.GRADER' }
   ];
 
   openMobileDetails(user: User): void {
@@ -203,8 +205,7 @@ export class UsersComponent implements OnInit {
   }
 
   getRoleLabel(role: string): string {
-    const roleObj = this.userRoles.find(r => r.value === role);
-    return roleObj?.label || role;
+    return this.translate.instant(`users.roles.${role}`) || role;
   }
 
   getRoleBadgeClass(role: string): string {

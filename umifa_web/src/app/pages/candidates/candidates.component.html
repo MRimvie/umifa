@@ -2,15 +2,15 @@
   <!-- Header -->
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">Gestion des Candidats</h1>
-      <p class="text-gray-600 mt-1">Inscrivez et gérez les candidats au CEP Arabe</p>
+      <h1 class="text-3xl font-bold text-gray-900">{{ 'candidates.title' | translate }}</h1>
+      <p class="text-gray-600 mt-1">{{ 'candidates.subtitle' | translate }}</p>
     </div>
     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
       <button (click)="openCreateDrawer()" class="btn-primary w-full sm:w-auto">
         <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-        Nouveau candidat
+        {{ 'candidates.new' | translate }}
       </button>
     </div>
   </div>
@@ -18,7 +18,7 @@
   <!-- Loading State -->
   <div *ngIf="loading() && candidates().length === 0" class="text-center py-12">
     <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-    <p class="mt-4 text-gray-600">Chargement des candidats...</p>
+    <p class="mt-4 text-gray-600">{{ 'candidates.loading' | translate }}</p>
   </div>
 
   <div class="card p-4">
@@ -27,7 +27,7 @@
         class="input-field h-9 py-1"
         [ngModel]="selectedSchoolYearIdFilter()"
         (ngModelChange)="selectedSchoolYearIdFilter.set($event); onChangeFilters()">
-        <option [ngValue]="''">Toutes les années</option>
+        <option [ngValue]="''">{{ 'candidates.allYears' | translate }}</option>
         <option *ngFor="let y of schoolYears()" [ngValue]="y.id">{{ y.year }}</option>
       </select>
 
@@ -35,9 +35,26 @@
         class="input-field h-9 py-1"
         [ngModel]="selectedCenterIdFilter()"
         (ngModelChange)="selectedCenterIdFilter.set($event); onChangeFilters()">
-        <option [ngValue]="''">Tous les centres</option>
+        <option [ngValue]="''">{{ 'candidates.allCenters' | translate }}</option>
         <option *ngFor="let c of centers()" [ngValue]="c.id">{{ c.name }}</option>
       </select>
+
+      <select
+        class="input-field h-9 py-1"
+        [ngModel]="selectedSchoolIdFilter()"
+        (ngModelChange)="selectedSchoolIdFilter.set($event); onChangeFilters()">
+        <option [ngValue]="''">{{ 'candidates.allSchools' | translate }}</option>
+        <option *ngFor="let s of schools()" [ngValue]="s.id">{{ s.name }}</option>
+      </select>
+
+      <div class="flex-1"></div>
+
+      <button type="button" class="btn-secondary h-9 py-1" (click)="exportPdf()" [disabled]="loading() || candidates().length === 0">
+        {{ 'candidates.exportPdf' | translate }}
+      </button>
+      <button type="button" class="btn-secondary h-9 py-1" (click)="exportExcel()" [disabled]="loading() || candidates().length === 0">
+        {{ 'candidates.exportExcel' | translate }}
+      </button>
     </div>
   </div>
 
@@ -58,9 +75,9 @@
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="text-sm font-semibold text-gray-900 truncate">{{ c.lastName }} {{ c.firstName }}</div>
-            <div class="text-xs text-gray-600 truncate">{{ c.school?.name || 'N/A' }} • {{ c.center?.name || 'Non affecté' }}</div>
+            <div class="text-xs text-gray-600 truncate">{{ c.school?.name || 'N/A' }} • {{ c.center?.name || ('candidates.notAssigned' | translate) }}</div>
           </div>
-          <div class="text-xs text-gray-500">Voir</div>
+          <div class="text-xs text-gray-500">{{ 'common.see' | translate }}</div>
         </div>
       </ng-template>
 
@@ -78,35 +95,35 @@
         <div *ngIf="mobileSelectedCandidate() as c" class="space-y-3">
           <div class="grid grid-cols-1 gap-3">
             <div>
-              <div class="text-xs text-gray-500">Genre</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.gender' | translate }}</div>
               <div class="text-sm text-gray-900">{{ c.gender }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500">Année naissance</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.yearOfBirth' | translate }}</div>
               <div class="text-sm text-gray-900">{{ c.dateOfBirth ? (c.dateOfBirth | date:'yyyy') : 'N/A' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500">École</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.school' | translate }}</div>
               <div class="text-sm text-gray-900">{{ c.school?.name || 'N/A' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500">Année scolaire</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.schoolYear' | translate }}</div>
               <div class="text-sm text-gray-900">{{ c.schoolYear?.year || 'N/A' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500">Centre</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.center' | translate }}</div>
               <div class="text-sm text-gray-900">{{ c.center?.name || '-' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500">N° PV</div>
+              <div class="text-xs text-gray-500">{{ 'candidates.numeroPV' | translate }}</div>
               <div class="text-sm text-gray-900">{{ c.numeroPV || '-' }}</div>
             </div>
           </div>
 
           <div class="flex flex-col gap-2">
-            <button type="button" class="btn-primary w-full" (click)="openEditDrawer(c); closeMobileDetails()">Modifier</button>
-            <button type="button" class="btn-secondary w-full" (click)="deleteCandidate(c.id); closeMobileDetails()">Supprimer</button>
-            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">Fermer</button>
+            <button type="button" class="btn-primary w-full" (click)="openEditDrawer(c); closeMobileDetails()">{{ 'common.edit' | translate }}</button>
+            <button type="button" class="btn-secondary w-full" (click)="deleteCandidate(c.id); closeMobileDetails()">{{ 'common.delete' | translate }}</button>
+            <button type="button" class="btn-secondary w-full" (click)="closeMobileDetails()">{{ 'common.close' | translate }}</button>
           </div>
         </div>
       </app-bottom-sheet>
@@ -116,15 +133,15 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genre</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Année naissance</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">École</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Année scolaire</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Centre</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° PV</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'common.lastName' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'common.firstName' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'candidates.gender' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'candidates.yearOfBirth' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'candidates.school' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'candidates.schoolYear' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'candidates.center' | translate }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'candidates.numeroPV' | translate }}</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -166,8 +183,35 @@
     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
     </svg>
-    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun candidat trouvé</h3>
-    <p class="mt-1 text-sm text-gray-500">Modifie les filtres pour afficher d'autres candidats.</p>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'candidates.empty' | translate }}</h3>
+    <p class="mt-1 text-sm text-gray-500">{{ 'candidates.emptyHint' | translate }}</p>
+  </div>
+</div>
+
+<!-- PDF Preview Modal -->
+<div *ngIf="pdfPreviewOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-gray-900/60" (click)="closePdfPreview()"></div>
+  <div class="relative z-10 flex flex-col w-full max-w-4xl h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+      <h3 class="text-lg font-semibold text-gray-900">{{ 'candidates.pdfPreview' | translate }}</h3>
+      <button type="button" class="p-2 rounded-lg hover:bg-gray-200 transition-colors" (click)="closePdfPreview()">
+        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="flex-1 min-h-0">
+      <iframe *ngIf="pdfPreviewSafeUrl()" [src]="pdfPreviewSafeUrl()" class="w-full h-full border-0"></iframe>
+    </div>
+    <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+      <button type="button" class="btn-secondary" (click)="closePdfPreview()">{{ 'common.close' | translate }}</button>
+      <button type="button" class="btn-primary" (click)="downloadPdf()">
+        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        {{ 'common.download' | translate }}
+      </button>
+    </div>
   </div>
 </div>
 
@@ -185,7 +229,7 @@
           <div class="bg-primary-600 px-4 py-6 sm:px-6">
             <div class="flex items-center justify-between">
               <h2 class="text-lg font-medium text-white" id="slide-over-title">
-                {{ editMode() ? 'Modifier le candidat' : 'Nouveau candidat' }}
+                {{ editMode() ? ('candidates.editTitle' | translate) : ('candidates.createTitle' | translate) }}
               </h2>
               <button (click)="closeDrawer()" class="text-primary-200 hover:text-white">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,7 +238,7 @@
               </button>
             </div>
             <p class="mt-1 text-sm text-primary-100">
-              {{ editMode() ? 'Modifiez les informations du candidat' : 'Remplissez les informations du candidat' }}
+              {{ editMode() ? ('candidates.editSubtitle' | translate) : ('candidates.createSubtitle' | translate) }}
             </p>
           </div>
 
@@ -204,12 +248,12 @@
               <!-- Nom et Prénom -->
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.lastName' | translate }} *</label>
                   <input type="text" [(ngModel)]="formData().lastName" name="lastName" required
                          class="input-field" placeholder="ZONGO">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.firstName' | translate }} *</label>
                   <input type="text" [(ngModel)]="formData().firstName" name="firstName" required
                          class="input-field" placeholder="Ahmed">
                 </div>
@@ -217,22 +261,22 @@
 
               <!-- Genre -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Genre *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'candidates.gender' | translate }} *</label>
                 <select [(ngModel)]="formData().gender" name="gender" required class="input-field">
-                  <option value="MASCULIN">Masculin</option>
-                  <option value="FEMININ">Féminin</option>
+                  <option value="MASCULIN">{{ 'common.male' | translate }}</option>
+                  <option value="FEMININ">{{ 'common.female' | translate }}</option>
                 </select>
               </div>
 
               <!-- Date et lieu de naissance -->
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'candidates.dateOfBirth' | translate }} *</label>
                   <input type="date" [(ngModel)]="formData().dateOfBirth" name="dateOfBirth" required
                          class="input-field">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Lieu de naissance *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'candidates.placeOfBirth' | translate }} *</label>
                   <input type="text" [(ngModel)]="formData().placeOfBirth" name="placeOfBirth" required
                          class="input-field" placeholder="Ouagadougou">
                 </div>
@@ -240,25 +284,25 @@
 
               <!-- Nationalité -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nationalité *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.nationality' | translate }} *</label>
                 <input type="text" [(ngModel)]="formData().nationality" name="nationality" required
                        class="input-field" placeholder="Burkinabé">
               </div>
 
               <!-- École -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">École *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'candidates.school' | translate }} *</label>
                 <select [(ngModel)]="formData().schoolId" name="schoolId" required class="input-field">
-                  <option value="">Sélectionner une école</option>
+                  <option value="">{{ 'candidates.selectSchool' | translate }}</option>
                   <option *ngFor="let school of schools()" [value]="school.id">{{ school.name }}</option>
                 </select>
               </div>
 
               <!-- Année scolaire -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Année scolaire *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'candidates.schoolYear' | translate }} *</label>
                 <select [(ngModel)]="formData().schoolYearId" name="schoolYearId" required class="input-field">
-                  <option value="">Sélectionner une année</option>
+                  <option value="">{{ 'candidates.selectYear' | translate }}</option>
                   <option *ngFor="let year of schoolYears()" [value]="year.id">{{ year.year }}</option>
                 </select>
               </div>
@@ -268,11 +312,11 @@
           <!-- Footer -->
           <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-200 bg-gray-50">
             <button (click)="closeDrawer()" type="button" class="btn-secondary mr-3">
-              Annuler
+              {{ 'common.cancel' | translate }}
             </button>
             <button (click)="saveCandidate()" [disabled]="loading()" class="btn-primary">
-              <span *ngIf="!loading()">{{ editMode() ? 'Mettre à jour' : 'Créer' }}</span>
-              <span *ngIf="loading()">Enregistrement...</span>
+              <span *ngIf="!loading()">{{ editMode() ? ('common.update' | translate) : ('common.create' | translate) }}</span>
+              <span *ngIf="loading()">{{ 'common.saving' | translate }}</span>
             </button>
           </div>
         </div>
@@ -301,14 +345,14 @@
 
         <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
           <button type="button" class="btn-secondary" (click)="closeDialog()">
-            {{ dialogVariant() === 'confirm' ? 'Annuler' : 'Fermer' }}
+            {{ dialogVariant() === 'confirm' ? ('dialog.cancel' | translate) : ('dialog.close' | translate) }}
           </button>
           <button
             *ngIf="dialogVariant() === 'confirm'"
             type="button"
             class="btn-primary"
             (click)="confirmDialog()">
-            Confirmer
+            {{ 'dialog.confirm' | translate }}
           </button>
         </div>
       </div>
