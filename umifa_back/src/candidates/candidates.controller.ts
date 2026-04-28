@@ -150,6 +150,47 @@ export class CandidatesController {
     return this.candidatesService.assignCenter(assignCenterDto);
   }
 
+  @Post('distribute/:schoolYearId')
+  @ApiOperation({
+    summary: 'Répartir automatiquement les candidats',
+    description: "Répartit automatiquement les candidats d'une année scolaire dans les centres actifs en respectant leur capacité",
+  })
+  @ApiParam({
+    name: 'schoolYearId',
+    description: "ID de l'année scolaire",
+    example: '660e8400-e29b-41d4-a716-446655440001',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Répartition effectuée avec succès',
+    schema: {
+      example: { message: '120 candidat(s) réparti(s) avec succès', count: 120 },
+    },
+  })
+  @Roles(UserRole.SUPER_ADMIN)
+  distributeCandidates(@Param('schoolYearId') schoolYearId: string) {
+    return this.candidatesService.distributeCandidates(schoolYearId);
+  }
+
+  @Get('distribution/:schoolYearId')
+  @ApiOperation({
+    summary: 'État de la répartition par centre',
+    description: "Retourne le nombre de candidats affectés par centre (pour une année scolaire), les capacités et les places restantes",
+  })
+  @ApiParam({
+    name: 'schoolYearId',
+    description: "ID de l'année scolaire",
+    example: '660e8400-e29b-41d4-a716-446655440001',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'État de la répartition',
+  })
+  @Roles(UserRole.SUPER_ADMIN)
+  getDistribution(@Param('schoolYearId') schoolYearId: string) {
+    return this.candidatesService.getDistribution(schoolYearId);
+  }
+
   @Post('generate-pv/:schoolYearId')
   @ApiOperation({
     summary: 'Générer mles numéros PV',

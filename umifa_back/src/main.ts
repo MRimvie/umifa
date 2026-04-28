@@ -11,6 +11,7 @@ async function bootstrap() {
       'http://localhost:4200',
       'http://localhost:5173',
       'https://umifa-web.onrender.com',
+      'http://102.180.50.92:5006',
       process.env.FRONTEND_URL
     ].filter(Boolean),
     credentials: true,

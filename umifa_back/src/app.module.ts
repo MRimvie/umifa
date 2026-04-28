@@ -8,6 +8,7 @@ import { SchoolYearsModule } from './school-years/school-years.module';
 import { ExamCentersModule } from './exam-centers/exam-centers.module';
 import { CandidatesModule } from './candidates/candidates.module';
 import { GradesModule } from './grades/grades.module';
+import { SubjectsModule } from './subjects/subjects.module';
 import { SeedController } from './seed.controller';
 import { MigrateController } from './migrate.controller';
 
@@ -24,6 +25,7 @@ import { MigrateController } from './migrate.controller';
     ExamCentersModule,
     CandidatesModule,
     GradesModule,
+    SubjectsModule,
   ],
   controllers: [SeedController, MigrateController],
 })

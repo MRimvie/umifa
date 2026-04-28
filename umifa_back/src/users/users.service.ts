@@ -76,6 +76,8 @@ export class UsersService {
         lastName: true,
         role: true,
         isActive: true,
+        schoolId: true,
+        centerId: true,
         school: true,
         center: true,
         createdAt: true,

@@ -75,6 +75,10 @@ export class SchoolsService {
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.school.delete({ where: { id } });
+    return this.prisma.school.update({
+      where: { id },
+      data: { isActive: false },
+      select: { id: true, isActive: true },
+    });
   }
 }

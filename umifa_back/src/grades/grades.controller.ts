@@ -7,8 +7,10 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GradesService } from './grades.service';
 import { CreateGradeDto } from './dto/create-grade.dto';
@@ -66,8 +68,8 @@ export class GradesController {
     },
   })
   @Roles(UserRole.SUPER_ADMIN, UserRole.GRADER)
-  create(@Body() createGradeDto: CreateGradeDto) {
-    return this.gradesService.create(createGradeDto);
+  create(@Body() createGradeDto: CreateGradeDto, @Req() req: Request) {
+    return this.gradesService.create(createGradeDto, req.user as any);
   }
 
   @Post('bulk')
@@ -113,8 +115,8 @@ export class GradesController {
     },
   })
   @Roles(UserRole.SUPER_ADMIN, UserRole.GRADER)
-  createBulk(@Body() grades: CreateGradeDto[]) {
-    return this.gradesService.createBulk(grades);
+  createBulk(@Body() grades: CreateGradeDto[], @Req() req: Request) {
+    return this.gradesService.createBulk(grades, req.user as any);
   }
 
   @Post('calculate/:candidateId')
@@ -155,6 +157,27 @@ export class GradesController {
   @Roles(UserRole.SUPER_ADMIN, UserRole.GRADER)
   calculateResults(@Param('candidateId') candidateId: string) {
     return this.gradesService.calculateResults(candidateId);
+  }
+
+  @Post('calculate-all')
+  @ApiOperation({ summary: 'Calculer toutes les moyennes', description: 'Calcule les résultats pour tous les candidats notés d\'une année scolaire' })
+  @Roles(UserRole.SUPER_ADMIN)
+  calculateAll(
+    @Query('schoolYearId') schoolYearId: string,
+    @Query('centerId') centerId?: string,
+  ) {
+    return this.gradesService.calculateAll(schoolYearId, centerId);
+  }
+
+  @Get('results')
+  @ApiOperation({ summary: 'Résultats des candidats', description: 'Retourne les résultats calculés pour tous les candidats d\'une année scolaire' })
+  @Roles(UserRole.SUPER_ADMIN, UserRole.GRADER)
+  getResults(
+    @Query('schoolYearId') schoolYearId: string,
+    @Query('centerId') centerId?: string,
+    @Query('schoolId') schoolId?: string,
+  ) {
+    return this.gradesService.getResults(schoolYearId, centerId, schoolId);
   }
 
   @Get()

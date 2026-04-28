@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
@@ -30,6 +31,18 @@ enum ExamResult {
   ADMIS
   AJOURNE
   EN_ATTENTE
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  noteMax   Int      @default(20)
+  isActive  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subjects")
 }
 
 model User {
@@ -90,6 +103,7 @@ model SchoolYear {
 model ExamCenter {
   id          String   @id @default(uuid())
   name        String
+  nameAr      String?
   address     String
   capacity    Int      @default(0)
   phone       String?
@@ -139,11 +153,13 @@ model Grade {
   candidateId     String
   candidate       Candidate   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   
-  centerId        String
-  center          ExamCenter  @relation(fields: [centerId], references: [id])
+  centerId        String?
+  center          ExamCenter?  @relation(fields: [centerId], references: [id])
   
   subject         String
   score           Float
+  maxScore        Float       @default(20)
+  comments        String?
   
   totalScore      Float?
   average         Float?

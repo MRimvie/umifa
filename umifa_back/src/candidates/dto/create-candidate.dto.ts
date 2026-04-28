@@ -1,8 +1,18 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
 
 export class CreateCandidateDto {
+  @ApiProperty({
+    description: 'Numéro PV du candidat',
+    example: 'PV-2025-001',
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  numeroPV?: string;
+
   @ApiProperty({
     description: 'Prénom du candidat',
     example: 'Ahmed',

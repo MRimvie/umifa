@@ -17,4 +17,8 @@ export class CreateExamCenterDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+  @IsString()
+  @IsOptional()
+  nameAr?: string;
 }
