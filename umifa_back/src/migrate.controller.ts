@@ -1,12 +1,15 @@
 import { Controller, Post } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+@ApiTags('migrate')
 @Controller('migrate')
 export class MigrateController {
   @Post()
+  @ApiOperation({ summary: 'Lancer prisma migrate deploy' })
   async migrate() {
     try {
       const { stdout, stderr } = await execAsync('./node_modules/.bin/prisma migrate deploy');
@@ -29,6 +32,7 @@ export class MigrateController {
   }
 
   @Post('push')
+  @ApiOperation({ summary: 'Appliquer le schéma Prisma (db push) — ajoute les colonnes manquantes' })
   async push() {
     try {
       const { stdout, stderr } = await execAsync('./node_modules/.bin/prisma db push');
@@ -51,6 +55,7 @@ export class MigrateController {
   }
 
   @Post('reset')
+  @ApiOperation({ summary: '⚠️ Réinitialiser la base de données (PERTE DE DONNÉES)' })
   async reset() {
     try {
       const { stdout, stderr } = await execAsync('./node_modules/.bin/prisma db push --force-reset --accept-data-loss');
