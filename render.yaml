@@ -20,7 +20,7 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        value: https://umifa-web.onrender.com
+        value: https://umifaapp.onrender.com
 
   # Frontend Angular
   - type: web
