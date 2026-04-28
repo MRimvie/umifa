@@ -17,7 +17,11 @@ export class SchoolYearsService {
     }
 
     return this.prisma.schoolYear.create({
-      data: createSchoolYearDto,
+      data: {
+        ...createSchoolYearDto,
+        startDate: new Date(createSchoolYearDto.startDate),
+        endDate: new Date(createSchoolYearDto.endDate),
+      },
     });
   }
 
@@ -63,9 +67,12 @@ export class SchoolYearsService {
 
   async update(id: string, updateSchoolYearDto: UpdateSchoolYearDto) {
     await this.findOne(id);
+    const data: any = { ...updateSchoolYearDto };
+    if (data.startDate) data.startDate = new Date(data.startDate);
+    if (data.endDate) data.endDate = new Date(data.endDate);
     return this.prisma.schoolYear.update({
       where: { id },
-      data: updateSchoolYearDto,
+      data,
     });
   }
 
