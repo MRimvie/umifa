@@ -29,7 +29,7 @@ services:
     region: frankfurt
     plan: free
     buildCommand: cd umifa_web && npm install && npm run build
-    staticPublishPath: umifa_web/dist/umifa-web/browser
+    staticPublishPath: umifa_web/dist/umifa_web/browser
     routes:
       - type: rewrite
         source: /*
